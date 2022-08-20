@@ -75,7 +75,7 @@ func TestDrawer_Draw(t *testing.T) {
 		},
 		{
 			name:     "1x2 (coordinates 0-0) + 1x1 (coordinates 2-0)",
-			expected: "* +\n* ",
+			expected: "* +\n*",
 			requests: []canvas.DrawRequest{
 				{
 					Width:  1,
@@ -219,6 +219,38 @@ func TestDrawer_DrawMultiple(t *testing.T) {
 				},
 			},
 		},
+		{
+			name: "Test fixture 1",
+			expected: `
+
+			@@@@@
+			@XXX@  XXXXXXXXXXXXXX
+			@@@@@  XOOOOOOOOOOOOX
+						 XOOOOOOOOOOOOX
+						 XOOOOOOOOOOOOX
+						 XOOOOOOOOOOOOX
+						 XXXXXXXXXXXXXX`,
+			requests: []canvas.DrawRequest{
+				{X: 3, Y: 2, Width: 5, Height: 3, Fill: "X", Outline: "@"},
+				{X: 10, Y: 3, Width: 14, Height: 6, Fill: "O", Outline: "X"},
+			},
+		},
+		{
+			name: "Test fixture 2",
+			expected: `              .......
+              .......
+              .......
+OOOOOOOO      .......
+O      O      .......
+O    XXXXX    .......
+OOOOOXXXXX
+     XXXXX`,
+			requests: []canvas.DrawRequest{
+				{X: 14, Y: 0, Width: 7, Height: 6, Outline: "none", Fill: "."},
+				{X: 0, Y: 3, Width: 8, Height: 4, Outline: "O", Fill: "none"},
+				{X: 5, Y: 5, Width: 5, Height: 3, Outline: "X", Fill: "X"},
+			},
+		},
 	}
 
 	for _, tc := range testCases {
@@ -228,6 +260,29 @@ func TestDrawer_DrawMultiple(t *testing.T) {
 			expected := tc.expected
 
 			assert.Equal(t, expected, got)
+		})
+	}
+}
+
+func TestDrawer_Error(t *testing.T) {
+	tests := []struct {
+		name        string
+		expectedErr error
+	}{
+		{
+			name: "when there are no requests, should return an error",
+		},
+		{
+			name: "when height is negative, should return an error",
+		},
+		{
+			name: "when width is negative, should return an error",
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+
 		})
 	}
 }

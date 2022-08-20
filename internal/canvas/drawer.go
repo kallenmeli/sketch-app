@@ -7,8 +7,7 @@ import (
 )
 
 const (
-	borderPadding = 2
-	paddingChar   = " "
+	paddingChar = " "
 )
 
 type (
@@ -17,15 +16,23 @@ type (
 	Draw [][]string
 )
 
+func NewDraw(width, height int) Draw {
+	draw := make(Draw, height)
+	for i := 0; i < height; i++ {
+		draw[i] = make([]string, width)
+	}
+	return draw
+}
+
 func (d Drawer) Draw(requests []DrawRequest) string {
 	width, height := d.getCanvasDimension(requests)
 	log.Infof("width: %v, height: %v", width, height)
 	draws := make([]Draw, 0, len(requests))
 
 	for _, request := range requests {
-		draw := d.createEmptyDraw(height, width)
-		for i := 0; i < height; i++ {
-			for j := 0; j < width; j++ {
+		draw := NewDraw(width, height)
+		for i := 0; i < request.HeightEnd(); i++ {
+			for j := 0; j < request.WidthEnd(); j++ {
 				// set padding char if index is lower than the border padding
 				if j < request.X {
 					draw[i][j] = paddingChar
@@ -33,22 +40,23 @@ func (d Drawer) Draw(requests []DrawRequest) string {
 				}
 
 				// fill the roof with the outline char
-				if request.Outline != "" && i == request.Y {
-					draw[i][j] = request.Outline
+				outline := request.GetOutlineChar()
+				if outline != "" && i == request.Y {
+					draw[i][j] = outline
 					continue
 				}
 
 				// fill the left and right borders with the outline char
-				if request.Outline != "" &&
+				if outline != "" &&
 					(i >= request.Y) &&
 					(j == request.X || j == request.X+request.Width-1) {
-					draw[i][j] = request.Outline
+					draw[i][j] = outline
 					continue
 				}
 
 				// fill the footer with the outline
-				if request.Outline != "" && i == request.HeightEnd()-1 {
-					draw[i][j] = request.Outline
+				if outline != "" && i == request.HeightEnd()-1 {
+					draw[i][j] = request.GetOutlineChar()
 					continue
 				}
 
@@ -110,12 +118,4 @@ func (d Drawer) getCanvasDimension(requests []DrawRequest) (int, int) {
 	}
 
 	return width, height
-}
-
-func (d Drawer) createEmptyDraw(height, width int) Draw {
-	draw := make(Draw, height)
-	for i := 0; i < height; i++ {
-		draw[i] = make([]string, width)
-	}
-	return draw
 }

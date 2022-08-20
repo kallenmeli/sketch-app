@@ -24,6 +24,13 @@ func (d DrawRequest) GetFillChar() string {
 	return d.Fill
 }
 
+func (d DrawRequest) GetOutlineChar() string {
+	if d.Outline == "none" {
+		return ""
+	}
+	return d.Outline
+}
+
 func (d DrawRequest) WidthEnd() int {
 	return d.X + d.Width
 }
