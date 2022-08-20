@@ -66,6 +66,7 @@ func TestDrawer_Draw(t *testing.T) {
 					Fill:   "*",
 				},
 				{
+					X:      1,
 					Width:  1,
 					Height: 1,
 					Fill:   "+",
@@ -74,7 +75,7 @@ func TestDrawer_Draw(t *testing.T) {
 		},
 		{
 			name:     "1x2 (coordinates 0-0) + 1x1 (coordinates 2-0)",
-			expected: "*  +\n*  ",
+			expected: "* +\n* ",
 			requests: []canvas.DrawRequest{
 				{
 					Width:  1,
@@ -82,10 +83,10 @@ func TestDrawer_Draw(t *testing.T) {
 					Fill:   "*",
 				},
 				{
+					X:      2,
 					Width:  1,
 					Height: 1,
 					Fill:   "+",
-					X:      2,
 				},
 			},
 		},
@@ -201,7 +202,7 @@ func TestDrawer_DrawMultiple(t *testing.T) {
 		requests []canvas.DrawRequest
 	}{
 		{
-			name:     "should draw the intersection of two draws",
+			name:     "should draw the intersection of two requests",
 			expected: "🔥🔥🔥\n🔥🔥🔥\n💧💧💧",
 			requests: []canvas.DrawRequest{
 				{

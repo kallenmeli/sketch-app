@@ -1,6 +1,8 @@
 package canvas
 
 import (
+	"strings"
+
 	"github.com/labstack/gommon/log"
 )
 
@@ -65,18 +67,32 @@ func (d Drawer) Draw(requests []DrawRequest) string {
 func (d Drawer) drawToString(width int, height int, draws []Draw) string {
 	sb := make([][]string, height)
 	for i := 0; i < height; i++ {
+		sb[i] = make([]string, width)
+
 		for j := 0; j < width; j++ {
 			for _, draw := range draws {
-				sb[i][j] = draw[i][j]
-				//sb.WriteString(draw[i][j])
+				value := draw[i][j]
+				currentValue := sb[i][j]
+				if strings.Trim(value, " ") == "" && currentValue != "" {
+					continue
+				}
+
+				sb[i][j] = value
 			}
+		}
+	}
+
+	result := strings.Builder{}
+	for i, row := range sb {
+		for _, value := range row {
+			result.WriteString(value)
 		}
 		isFinalRow := i == height-1
 		if !isFinalRow {
-			//sb.WriteString("\n")
+			result.WriteString("\n")
 		}
 	}
-	return sb.String()
+	return result.String()
 }
 
 func (d Drawer) getCanvasDimension(requests []DrawRequest) (int, int) {
