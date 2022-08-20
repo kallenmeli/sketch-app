@@ -1,0 +1,13 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres
+    container_name: sketch-drawing-db
+    restart: unless-stopped
+    env_file:
+      - .env
+    ports:
+      - "5431:5432"
+    volumes:
+      - ./db/data:/docker-entrypoint-initdb.d
