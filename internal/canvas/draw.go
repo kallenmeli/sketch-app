@@ -97,6 +97,10 @@ func (d DrawRequest) IsFirstRow(row int) bool {
 	return row == d.Y
 }
 
+func (d DrawRequest) IsLateralOutline(column int) bool {
+	return column == d.X || column == d.WidthEnd()-1
+}
+
 func (d DrawRequest) Validate() error {
 	isEmpty := func(value text.ASCIIChar) bool {
 		return value == "" || value == EmptyChar
@@ -123,8 +127,4 @@ func (d DrawRequest) Validate() error {
 	}
 
 	return nil
-}
-
-func (d DrawRequest) IsLateralOutline(column int) bool {
-	return column == d.X || column == d.WidthEnd()-1
 }

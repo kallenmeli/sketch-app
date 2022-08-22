@@ -183,3 +183,45 @@ func TestDrawRequests_Validate(t *testing.T) {
 		})
 	}
 }
+
+func TestDrawRequest_IsLastRow(t *testing.T) {
+	testCases := []struct {
+		name      string
+		height    int
+		Y         int
+		isLastRow bool
+		row       int
+	}{
+		{
+			name:      "when row is the last one, should return true",
+			height:    3,
+			Y:         0,
+			row:       2,
+			isLastRow: true,
+		},
+		{
+			name:      "when row is the last one (y padding + height), should return true",
+			height:    3,
+			Y:         2,
+			row:       4,
+			isLastRow: true,
+		},
+		{
+			name:      "when row is lower than the last one, should return false",
+			height:    3,
+			Y:         0,
+			row:       1,
+			isLastRow: false,
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			request := faker.NewSingleDrawRequest(t)
+			request.Height = tc.height
+			request.Y = tc.Y
+			got := request.IsLastRow(tc.row)
+			assert.Equal(t, tc.isLastRow, got)
+		})
+	}
+}
