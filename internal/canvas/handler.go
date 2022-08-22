@@ -4,8 +4,9 @@ import (
 	"errors"
 	"fmt"
 	"github.com/julienschmidt/httprouter"
+	"html/template"
 	"net/http"
-	"sketch/internal/routers"
+	"sketch/internal/routing"
 )
 
 type Handler struct {
@@ -18,8 +19,15 @@ func NewHandler(service Service) *Handler {
 	}
 }
 
+func (c *Handler) Show(w http.ResponseWriter, r *http.Request, _ httprouter.Params) error {
+	id := r.URL.Query().Get("id")
+	tmpl := template.Must(template.ParseFiles("./pages/home.html"))
+	drawing, _ := c.service.GetByID(r.Context(), id)
+	return tmpl.Execute(w, drawing)
+}
+
 func (c *Handler) Draw(w http.ResponseWriter, r *http.Request, _ httprouter.Params) error {
-	requests, err := routers.FromJSON[DrawRequests](r)
+	requests, err := routing.FromJSON[DrawRequests](r)
 	if err != nil {
 		return fmt.Errorf("failed to get json body: %w", err)
 	}
@@ -33,7 +41,7 @@ func (c *Handler) Draw(w http.ResponseWriter, r *http.Request, _ httprouter.Para
 		return err
 	}
 
-	return routers.ToJSON(w, http.StatusOK, response)
+	return routing.ToJSON(w, http.StatusOK, response)
 }
 
 func (c *Handler) GetById(w http.ResponseWriter, r *http.Request, params httprouter.Params) error {
@@ -41,12 +49,12 @@ func (c *Handler) GetById(w http.ResponseWriter, r *http.Request, params httprou
 	canvas, err := c.service.GetByID(r.Context(), id)
 
 	if errors.Is(err, ErrNotFound) {
-		return routers.NotFound(w, err)
+		return routing.NotFound(w, err)
 	}
 
 	if err != nil {
 		return err
 	}
 
-	return routers.ToJSON(w, http.StatusOK, canvas)
+	return routing.ToJSON(w, http.StatusOK, canvas)
 }

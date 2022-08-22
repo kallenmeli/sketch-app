@@ -1,10 +1,12 @@
-package routers
+package routing
 
 import (
 	goerrors "errors"
+	"fmt"
 	"github.com/julienschmidt/httprouter"
 	"github.com/labstack/gommon/log"
 	"net/http"
+	"os"
 	"sketch/internal/errors"
 )
 
@@ -58,5 +60,6 @@ func (r *Router) Post(path string, handler func(http.ResponseWriter, *http.Reque
 }
 
 func (r *Router) Run() {
-	log.Fatal(http.ListenAndServe(":8080", r.router))
+	port := os.Getenv("APP_PORT")
+	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%s", port), r.router))
 }
