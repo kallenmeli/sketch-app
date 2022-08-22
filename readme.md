@@ -18,12 +18,12 @@ go test ./...
 
 All the endpoints are mapped to in the root path.
 
-**Get a draw by ID**
+**[API] Get a draw by ID**
 ```bash 
 curl http://localhost:8080/your-guid
 ```
 
-**Write a draw**
+**[API] Write a draw**
 
 ```bash
 curl --location --request POST 'localhost:8080/' \
@@ -47,6 +47,11 @@ curl --location --request POST 'localhost:8080/' \
     }
 ]'
 ```
+
+**[VIEW] See a draw:**
+
+Access the following webpage passing your valid draw id.
+[http://localhost:8080?id=your-draw-id](http://localhost:8080?id=your-draw-id)
 
 
 ## Techs & Libraries
