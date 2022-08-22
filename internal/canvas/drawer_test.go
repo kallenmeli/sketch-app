@@ -158,9 +158,9 @@ func TestDrawer_DrawWithOutline(t *testing.T) {
 		},
 		{
 			name: "...",
-			expected: `          
-          
-          
+			expected: `
+
+
           XXXXXXXXXXXXXX
           XOOOOOOOOOOOOX
           XOOOOOOOOOOOOX
@@ -226,13 +226,13 @@ func TestDrawer_DrawMultiple(t *testing.T) {
 			name: "Test fixture 1",
 			expected: `
 
-			@@@@@
-			@XXX@  XXXXXXXXXXXXXX
-			@@@@@  XOOOOOOOOOOOOX
-						 XOOOOOOOOOOOOX
-						 XOOOOOOOOOOOOX
-						 XOOOOOOOOOOOOX
-						 XXXXXXXXXXXXXX`,
+   @@@@@
+   @XXX@  XXXXXXXXXXXXXX
+   @@@@@  XOOOOOOOOOOOOX
+          XOOOOOOOOOOOOX
+          XOOOOOOOOOOOOX
+          XOOOOOOOOOOOOX
+          XXXXXXXXXXXXXX`,
 			requests: []canvas.DrawRequest{
 				{X: 3, Y: 2, Width: 5, Height: 3, Fill: "X", Outline: "@"},
 				{X: 10, Y: 3, Width: 14, Height: 6, Fill: "O", Outline: "X"},
@@ -249,8 +249,8 @@ O    XXXXX    .......
 OOOOOXXXXX
      XXXXX`,
 			requests: []canvas.DrawRequest{
-				//{X: 14, Y: 0, Width: 7, Height: 6, Outline: "none", Fill: "."},
-				//{X: 0, Y: 3, Width: 8, Height: 4, Outline: "O", Fill: "none"},
+				{X: 14, Y: 0, Width: 7, Height: 6, Outline: "none", Fill: "."},
+				{X: 0, Y: 3, Width: 8, Height: 4, Outline: "O", Fill: "none"},
 				{X: 5, Y: 5, Width: 5, Height: 3, Outline: "X", Fill: "X"},
 			},
 		},

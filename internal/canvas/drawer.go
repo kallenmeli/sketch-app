@@ -34,6 +34,9 @@ func (d drawer) Draw(requests []DrawRequest) (string, error) {
 	for _, request := range requests {
 		draw := NewDraw(width, height)
 		for i := 0; i < request.HeightEnd(); i++ {
+			if i < request.Y {
+				continue
+			}
 			for j := 0; j < request.WidthEnd(); j++ {
 				// set padding char if index is lower than the border padding
 				if j < request.X {
@@ -73,24 +76,8 @@ func (d drawer) Draw(requests []DrawRequest) (string, error) {
 	return d.drawToString(width, height, draws), nil
 }
 
-// transform a draw to a string
 func (d drawer) drawToString(width int, height int, draws []Draw) string {
-	sb := make([][]string, height)
-	for i := 0; i < height; i++ {
-		sb[i] = make([]string, width)
-
-		for j := 0; j < width; j++ {
-			for _, draw := range draws {
-				value := draw[i][j]
-				currentValue := sb[i][j]
-				if strings.Trim(value, " ") == "" && currentValue != "" {
-					continue
-				}
-
-				sb[i][j] = value
-			}
-		}
-	}
+	sb := d.joinDraws(width, height, draws)
 
 	result := strings.Builder{}
 	for i, row := range sb {
@@ -103,6 +90,26 @@ func (d drawer) drawToString(width int, height int, draws []Draw) string {
 		}
 	}
 	return result.String()
+}
+
+func (d drawer) joinDraws(width int, height int, draws []Draw) [][]string {
+	result := make([][]string, height)
+	for i := 0; i < height; i++ {
+		result[i] = make([]string, width)
+
+		for j := 0; j < width; j++ {
+			for _, draw := range draws {
+				value := draw[i][j]
+				currentValue := result[i][j]
+				if strings.Trim(value, " ") == "" && currentValue != "" {
+					continue
+				}
+
+				result[i][j] = value
+			}
+		}
+	}
+	return result
 }
 
 func (d drawer) getCanvasDimension(requests []DrawRequest) (int, int) {
