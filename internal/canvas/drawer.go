@@ -11,23 +11,25 @@ const (
 )
 
 type (
-	Drawer struct {
+	Drawer interface {
+		Draw(requests []DrawRequest) (string, error)
 	}
-	Draw [][]string
+	drawer struct {
+	}
 )
 
-func NewDraw(width, height int) Draw {
-	draw := make(Draw, height)
-	for i := 0; i < height; i++ {
-		draw[i] = make([]string, width)
-	}
-	return draw
+func NewDrawer() Drawer {
+	return &drawer{}
 }
 
-func (d Drawer) Draw(requests []DrawRequest) string {
+func (d drawer) Draw(requests []DrawRequest) (string, error) {
 	width, height := d.getCanvasDimension(requests)
 	log.Infof("width: %v, height: %v", width, height)
 	draws := make([]Draw, 0, len(requests))
+
+	if len(requests) == 0 {
+		return "", ErrEmptyRequests
+	}
 
 	for _, request := range requests {
 		draw := NewDraw(width, height)
@@ -68,11 +70,11 @@ func (d Drawer) Draw(requests []DrawRequest) string {
 		draws = append(draws, draw)
 	}
 
-	return d.drawToString(width, height, draws)
+	return d.drawToString(width, height, draws), nil
 }
 
 // transform a draw to a string
-func (d Drawer) drawToString(width int, height int, draws []Draw) string {
+func (d drawer) drawToString(width int, height int, draws []Draw) string {
 	sb := make([][]string, height)
 	for i := 0; i < height; i++ {
 		sb[i] = make([]string, width)
@@ -103,7 +105,7 @@ func (d Drawer) drawToString(width int, height int, draws []Draw) string {
 	return result.String()
 }
 
-func (d Drawer) getCanvasDimension(requests []DrawRequest) (int, int) {
+func (d drawer) getCanvasDimension(requests []DrawRequest) (int, int) {
 	width := 0
 	height := 0
 

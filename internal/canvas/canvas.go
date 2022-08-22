@@ -1,45 +1,25 @@
 package canvas
 
-import "time"
+import (
+	"time"
+
+	"github.com/google/uuid"
+)
+
+const (
+	EmptyChar = "none"
+)
 
 type Canvas struct {
-	ID        string    `json:"id"`
-	Drawing   string    `json:"drawing"`
-	CreatedAt time.Time `json:"created_at"`
+	ID        string    `json:"id" db:"id"`
+	Drawing   string    `json:"drawing" db:"drawing"`
+	CreatedAt time.Time `json:"created_at" db:"created_at"`
 }
 
-type DrawRequest struct {
-	X       int    `json:"x"`
-	Y       int    `json:"y"`
-	Width   int    `json:"width"`
-	Height  int    `json:"height"`
-	Outline string `json:"outline"`
-	Fill    string `json:"fill"`
-}
-
-func (d DrawRequest) GetFillChar() string {
-	if d.Fill == "none" {
-		return " "
+func NewCanvas(drawing string) Canvas {
+	return Canvas{
+		ID:        uuid.New().String(),
+		Drawing:   drawing,
+		CreatedAt: time.Now().UTC(),
 	}
-	return d.Fill
-}
-
-func (d DrawRequest) GetOutlineChar() string {
-	if d.Outline == "none" {
-		return ""
-	}
-	return d.Outline
-}
-
-func (d DrawRequest) WidthEnd() int {
-	return d.X + d.Width
-}
-
-func (d DrawRequest) HeightEnd() int {
-	return d.Y + d.Height
-}
-
-type DrawResponse struct {
-	ID      string `json:"id"`
-	Drawing string `json:"canvas"`
 }

@@ -1,19 +1,35 @@
 ## API:
-[ ] create the parser method;
-[ ] create the model;
-[ ] create base structure; 
-[ ] create database layer for each request of drawing;
-[ ] create endpoint that will list all drawings;
-[ ] create an endpoint that detail a drawing;
-[ ] include swagger
+- [x] create the parser method;
+- [x] create the model;
+- [x] create base structure; 
+- [x] create database layer for each request of drawing;
+- [x] create an endpoint that detail a drawing;
+
+## Tests
+- [x] Test Handlers
+- [x] Test Service
+- [ ] Test Repositories
+- [ ] Test DTO (requests)
+- [ ] Test ASCII
+
+
+## Test Service:
+
+## Test Repository
+
+
+- [ ] Validate if the characters are ASCII
+
+## Front:
+- [ ] Create a front end in go that consumes the API
 
 ## validations:
-[ ] both position should not be negative;
-[ ] the size cannot be negative;
+- [x] both position should not be negative;
+- [x] the size cannot be negative;
+
 
 # Acceptance criteria
-[ ] build git history;
+[x] build git history;
 [ ] create a front end that read data from API;
-[ ] Create a read.me;
-  - how to run the project (backend)
+[x] Create a read.me;
   - how to run the front-end

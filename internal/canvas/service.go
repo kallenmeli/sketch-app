@@ -8,24 +8,19 @@ import (
 type (
 	service struct {
 		repository Repository
+		drawer     Drawer
 	}
 	Service interface {
-		GetAll(ctx context.Context, id string) ([]Canvas, error)
-		GetByID(ctx context.Context) (*Canvas, error)
-		Save(ctx context.Context, canvas Canvas) error
+		GetByID(ctx context.Context, id string) (*Canvas, error)
+		Save(ctx context.Context, requests DrawRequests) (*DrawResponse, error)
 	}
 )
 
-func NewService() Service {
-	return nil
-}
-
-func (s service) GetAll(ctx context.Context) ([]Canvas, error) {
-	drawings, err := s.repository.GetAll(ctx)
-	if err != nil {
-		return nil, fmt.Errorf("failed to get drawings: %w", err)
+func NewService(repository Repository, drawer Drawer) Service {
+	return &service{
+		repository: repository,
+		drawer:     drawer,
 	}
-	return drawings, nil
 }
 
 func (s service) GetByID(ctx context.Context, id string) (*Canvas, error) {
@@ -36,7 +31,19 @@ func (s service) GetByID(ctx context.Context, id string) (*Canvas, error) {
 	return &drawing, nil
 }
 
-func (s service) Save(ctx context.Context, canvas Canvas) error {
-	//TODO implement me
-	panic("implement me")
+func (s service) Save(ctx context.Context, request DrawRequests) (*DrawResponse, error) {
+	draw, err := s.drawer.Draw(request)
+	if err != nil {
+		return nil, fmt.Errorf("fail to draw: %w", err)
+	}
+
+	canvas := NewCanvas(draw)
+	if err := s.repository.Save(ctx, canvas); err != nil {
+		return nil, fmt.Errorf("error saving canvas: %w", err)
+	}
+
+	return &DrawResponse{
+		ID:      canvas.ID,
+		Drawing: draw,
+	}, nil
 }

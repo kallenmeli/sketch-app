@@ -8,7 +8,6 @@ import (
 )
 
 func TestDrawer_Draw(t *testing.T) {
-
 	testCases := []struct {
 		name     string
 		expected string
@@ -129,8 +128,10 @@ func TestDrawer_Draw(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			drawer := canvas.Drawer{}
-			got := drawer.Draw(tc.requests)
+			drawer := canvas.NewDrawer()
+			got, err := drawer.Draw(tc.requests)
+
+			assert.NoError(t, err)
 			assert.Equal(t, tc.expected, got)
 		})
 	}
@@ -188,8 +189,10 @@ func TestDrawer_DrawWithOutline(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			drawer := canvas.Drawer{}
-			got := drawer.Draw(tc.requests)
+			drawer := canvas.NewDrawer()
+			got, err := drawer.Draw(tc.requests)
+
+			assert.NoError(t, err)
 			assert.Equal(t, tc.expected, got)
 		})
 	}
@@ -246,8 +249,8 @@ O    XXXXX    .......
 OOOOOXXXXX
      XXXXX`,
 			requests: []canvas.DrawRequest{
-				{X: 14, Y: 0, Width: 7, Height: 6, Outline: "none", Fill: "."},
-				{X: 0, Y: 3, Width: 8, Height: 4, Outline: "O", Fill: "none"},
+				//{X: 14, Y: 0, Width: 7, Height: 6, Outline: "none", Fill: "."},
+				//{X: 0, Y: 3, Width: 8, Height: 4, Outline: "O", Fill: "none"},
 				{X: 5, Y: 5, Width: 5, Height: 3, Outline: "X", Fill: "X"},
 			},
 		},
@@ -255,10 +258,11 @@ OOOOOXXXXX
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			drawer := canvas.Drawer{}
-			got := drawer.Draw(tc.requests)
+			drawer := canvas.NewDrawer()
+			got, err := drawer.Draw(tc.requests)
 			expected := tc.expected
 
+			assert.NoError(t, err)
 			assert.Equal(t, expected, got)
 		})
 	}
@@ -270,19 +274,16 @@ func TestDrawer_Error(t *testing.T) {
 		expectedErr error
 	}{
 		{
-			name: "when there are no requests, should return an error",
-		},
-		{
-			name: "when height is negative, should return an error",
-		},
-		{
-			name: "when width is negative, should return an error",
+			name:        "when there are no requests, should return an error",
+			expectedErr: canvas.ErrEmptyRequests,
 		},
 	}
 
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
-
+			drawer := canvas.NewDrawer()
+			_, err := drawer.Draw([]canvas.DrawRequest{})
+			assert.Equal(t, tc.expectedErr, err)
 		})
 	}
 }

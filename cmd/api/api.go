@@ -1,15 +1,20 @@
 package api
 
-func Start() error {
-	return nil
-	//router := routers.NewRouter()
-	//repository := canvas.NewRepository()
-	//service := canvas.NewService(repository)
-	//handler := NewHandler(service)
-	//
-	//router.Post("/", handler.Draw)
-	//router.Get("/", handler.GetAll)
-	//router.Get("/{id}", handler.GetByID)
-	//
-	//router.Run()
+import (
+	"sketch/db"
+	"sketch/internal/canvas"
+	"sketch/internal/routers"
+)
+
+func Start() {
+	router := routers.NewRouter()
+	connection := db.GetConnection()
+	repository := canvas.NewRepository(connection)
+	drawer := canvas.NewDrawer()
+	service := canvas.NewService(repository, drawer)
+	handler := canvas.NewHandler(service)
+
+	router.Post("/", handler.Draw)
+	router.Get("/:id", handler.GetById)
+	router.Run()
 }
