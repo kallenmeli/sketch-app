@@ -33,12 +33,9 @@ func (d drawer) Draw(requests []DrawRequest) (string, error) {
 
 	for _, request := range requests {
 		draw := NewDraw(width, height)
-		for i := 0; i < request.HeightEnd(); i++ {
-			if i < request.Y {
-				continue
-			}
+		for i := request.Y; i < request.HeightEnd(); i++ {
 			for j := 0; j < request.WidthEnd(); j++ {
-				// set padding char if index is lower than the border padding
+
 				if j < request.X {
 					draw[i][j] = paddingChar
 					continue
@@ -65,9 +62,7 @@ func (d drawer) Draw(requests []DrawRequest) (string, error) {
 					continue
 				}
 
-				if i >= request.Y && i < request.Y+request.Height && j >= request.X && j < request.X+request.Width {
-					draw[i][j] = request.GetFillChar()
-				}
+				draw[i][j] = request.GetFillChar()
 			}
 		}
 		draws = append(draws, draw)
@@ -94,18 +89,19 @@ func (d drawer) drawToString(width int, height int, draws []Draw) string {
 
 func (d drawer) joinDraws(width int, height int, draws []Draw) [][]string {
 	result := make([][]string, height)
-	for i := 0; i < height; i++ {
-		result[i] = make([]string, width)
+	for row := 0; row < height; row++ {
+		result[row] = make([]string, width)
 
-		for j := 0; j < width; j++ {
+		for column := 0; column < width; column++ {
 			for _, draw := range draws {
-				value := draw[i][j]
-				currentValue := result[i][j]
-				if strings.Trim(value, " ") == "" && currentValue != "" {
+				value := draw[row][column]
+				currentValue := result[row][column]
+				cannotBeReplacedWithEmpty := strings.Trim(value, " ") == "" && currentValue != ""
+				if cannotBeReplacedWithEmpty {
 					continue
 				}
 
-				result[i][j] = value
+				result[row][column] = value
 			}
 		}
 	}
