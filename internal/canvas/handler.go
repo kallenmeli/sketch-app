@@ -22,7 +22,18 @@ func NewHandler(service Service) *Handler {
 func (c *Handler) Show(w http.ResponseWriter, r *http.Request, _ httprouter.Params) error {
 	id := r.URL.Query().Get("id")
 	tmpl := template.Must(template.ParseFiles("./pages/home.html"))
-	drawing, _ := c.service.GetByID(r.Context(), id)
+	drawing, err := c.service.GetByID(r.Context(), id)
+
+	if errors.Is(err, ErrNotFound) {
+		return template.
+			Must(template.ParseFiles("./pages/404.html")).
+			Execute(w, nil)
+	}
+
+	if err != nil {
+		return tmpl.Execute(w, err)
+	}
+
 	return tmpl.Execute(w, drawing)
 }
 
