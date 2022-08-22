@@ -3,6 +3,7 @@ package canvas
 import (
 	"sketch/internal/errors"
 	"sketch/internal/text"
+	"strings"
 )
 
 type (
@@ -24,6 +25,21 @@ type (
 		Drawing string `json:"canvas"`
 	}
 )
+
+func (d Draw) String() string {
+	height := len(d)
+	result := strings.Builder{}
+	for i, row := range d {
+		for _, value := range row {
+			result.WriteString(value)
+		}
+		isFinalRow := i == height-1
+		if !isFinalRow {
+			result.WriteString("\n")
+		}
+	}
+	return result.String()
+}
 
 var (
 	ErrEmptyRequests = errors.Error("at least one request is required")
@@ -73,6 +89,14 @@ func (d DrawRequest) HeightEnd() int {
 	return d.Y + d.Height
 }
 
+func (d DrawRequest) IsLastRow(row int) bool {
+	return row == d.HeightEnd()-1
+}
+
+func (d DrawRequest) IsFirstRow(row int) bool {
+	return row == d.Y
+}
+
 func (d DrawRequest) Validate() error {
 	isEmpty := func(value text.ASCIIChar) bool {
 		return value == "" || value == EmptyChar
@@ -99,4 +123,8 @@ func (d DrawRequest) Validate() error {
 	}
 
 	return nil
+}
+
+func (d DrawRequest) IsLateralOutline(column int) bool {
+	return column == d.X || column == d.WidthEnd()-1
 }

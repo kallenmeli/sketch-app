@@ -33,61 +33,57 @@ func (d drawer) Draw(requests []DrawRequest) (string, error) {
 
 	for _, request := range requests {
 		draw := NewDraw(width, height)
-		for i := request.Y; i < request.HeightEnd(); i++ {
-			for j := 0; j < request.WidthEnd(); j++ {
+		for row := request.Y; row < request.HeightEnd(); row++ {
+			for column := 0; column < request.WidthEnd(); column++ {
 
-				if j < request.X {
-					draw[i][j] = paddingChar
+				if column < request.X {
+					draw[row][column] = paddingChar
 					continue
 				}
 
-				// fill the roof with the outline char
-				outline := request.GetOutlineChar()
-				if outline != "" && i == request.Y {
-					draw[i][j] = outline
+				if canFill, outline := d.canFillOutline(row, column, request); canFill {
+					draw[row][column] = outline
 					continue
 				}
 
-				// fill the left and right borders with the outline char
-				if outline != "" &&
-					(i >= request.Y) &&
-					(j == request.X || j == request.X+request.Width-1) {
-					draw[i][j] = outline
-					continue
-				}
-
-				// fill the footer with the outline
-				if outline != "" && i == request.HeightEnd()-1 {
-					draw[i][j] = request.GetOutlineChar()
-					continue
-				}
-
-				draw[i][j] = request.GetFillChar()
+				draw[row][column] = request.GetFillChar()
 			}
 		}
+
 		draws = append(draws, draw)
 	}
 
 	return d.drawToString(width, height, draws), nil
 }
 
-func (d drawer) drawToString(width int, height int, draws []Draw) string {
-	sb := d.joinDraws(width, height, draws)
+func (d drawer) canFillOutline(row, column int, request DrawRequest) (bool, string) {
+	outline := request.GetOutlineChar()
 
-	result := strings.Builder{}
-	for i, row := range sb {
-		for _, value := range row {
-			result.WriteString(value)
-		}
-		isFinalRow := i == height-1
-		if !isFinalRow {
-			result.WriteString("\n")
-		}
+	if outline == "" {
+		return false, ""
 	}
-	return result.String()
+
+	if request.IsFirstRow(row) {
+		return true, outline
+	}
+
+	if row >= request.Y && request.IsLateralOutline(column) {
+		return true, outline
+	}
+
+	if request.IsLastRow(row) {
+		return true, outline
+	}
+
+	return false, ""
 }
 
-func (d drawer) joinDraws(width int, height int, draws []Draw) [][]string {
+func (d drawer) drawToString(width int, height int, draws []Draw) string {
+	finalDraw := d.joinDraws(width, height, draws)
+	return finalDraw.String()
+}
+
+func (d drawer) joinDraws(width int, height int, draws []Draw) Draw {
 	result := make([][]string, height)
 	for row := 0; row < height; row++ {
 		result[row] = make([]string, width)
