@@ -2,6 +2,8 @@
 
 ## How to run?
 
+You need docker compose installed to run the project this way, but you can setup the environment variables in your favorite IDE (see `.env` file).
+
 ```bash
 docker-compose up
 ```
